@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+source "$(dirname $(readlink $BASH_SOURCE))/../prelude.sh"
+include ui/ui_tools.sh
+
+if ! is_in_tmux; then
+    echo "status=error reason='should be executed from within tmux'"
+    exit 3
+fi
+
+opts=$(list_sessions)
+opts+=$'\nR rename session'
+opts+=$'\n- kill sessions'
+
+for host_alias in "${c_host_aliases[@]}"; do
+    opts+=$(printf "\n+ new session on [%s]" "$host_alias")
+done
+
+if [[ -z "${opts[@]}" ]]; then
+    log "status=error reason=empty_options"
+fi
+
+option="$(echo "${opts[@]}" | fzf --tmux --select-1 2>/dev/null | sed 's/:.*//g')"
+
+if [ -z "$option" ]; then
+    log "status=cancelled reason=no_option_specified"
+    exit 0
+fi
+
+option_kind="$(echo "$option" | sed 's/ on \[.*//')"
+host_alias="$(echo "$option" | sed -rn 's/.* \[(.*)\]/\1/p')"
+
+IFS=' ' read -r -a option <<<"$option"
+log "option='${option[@]}' kind='$option_kind' len=${#option[@]}"
+
+case "${option_kind}" in
+'R rename session') run ui/rename_session.sh ;;
+'- kill sessions') run ui/kill_sessions.sh ;;
+'+ new session') run ui/new_session.sh "$host_alias" ;;
+*) run switch_session.sh "${option[@]}" ;;
+esac

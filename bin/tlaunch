@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+source "$(dirname $(readlink $BASH_SOURCE))/../prelude.sh"
+
+function _tmux_dispatch() {
+    host_alias="${1:?Need host alias}"
+    shift
+
+    if is_on_host_alias "$host_alias"; then
+        local_tmux "$@"
+    else
+        remote_tmux "$host_alias" "$@"
+    fi
+}
+
+function _synchronize() {
+    run sync.sh
+}
+
+function _attach_session() {
+    run attach_session.sh "$@" </dev/tty <&1 &
+}
+
+function _execute() {
+    IFS=$' ' cmd_args=(${1:-})
+    cmd="${cmd_args[0]}"
+    args=("${cmd_args[@]:1}")
+
+    log "cmd=$cmd(${cmd_args[@]:1}) status=preexec"
+
+    case "$cmd" in
+    synchronize)
+        _synchronize
+        ;;
+    attach)
+        _attach_session "${args[@]}"
+        _synchronize
+        ;;
+    tmux_dispatch)
+        _tmux_dispatch "${args[@]}"
+        _synchronize
+        ;;
+    *)
+        log "cmd=$cmd status=unsupported"
+        ;;
+    esac
+}
+
+_attach_session "$@"
+_synchronize
+
+log "cmd=listen endpoint=localhost:${c_ctrl_port}"
+
+while read -r command; do
+    log "cmd=cmd_received command='$command'"
+    _execute "$command"
+done < <(nc -kl localhost "${c_ctrl_port}")
