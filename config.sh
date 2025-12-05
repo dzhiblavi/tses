@@ -8,5 +8,8 @@ c_remote_sessions_file_path="/tmp/tses-remote-sessions"
 # local log path
 c_log_file_path="${HOME}/.local/share/tx/tx.log"
 
-# other ports that should be forwarded, for example:
-c_forward_ports+=("12398")
+# ports that should be forwarded (local to remote)
+c_ltr_forward_ports+=("12398")
+
+# ports that should be forwarded (remote to local)
+c_rtl_forward_ports+=("12399")

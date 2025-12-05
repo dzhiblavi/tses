@@ -42,7 +42,8 @@ Put it in `~/.config/tses/config.sh` file.
 | c_host_alias_to_hostname | Map | Define aliases for each remote machine. Alias is the key and hostname is the value. |
 | c_remote_sessions_file_path | String | Path for file where the remote sessions will be cached. |
 | c_log_file_path | String | Logs path |
-| c_forward_ports | Array | Ports that should be forwarded over SSH (optional) |
+| c_ltr_forward_ports | Array | Ports that should be forwarded over SSH (optional, remote to local) |
+| c_rtl_forward_ports | Array | Ports that should be forwarded over SSH (optional, local to remote) |
 
 ### Attach via tlaunch
 

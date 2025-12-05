@@ -67,13 +67,19 @@ function remote_tmux_interactive() {
     host_alias="${1:?Need host alias}"
     shift
 
-    port_fwd_spec=()
-    for port in "${c_forward_ports[@]}"; do
-        port_fwd_spec+=("-R $port:localhost:$port")
+    rtl_port_fwd_spec=()
+    for port in "${c_rtl_forward_ports[@]}"; do
+        rtl_port_fwd_spec+=("-R $port:localhost:$port")
     done
 
+    #ltr_port_fwd_spec=()
+    #for port in "${c_ltr_forward_ports[@]}"; do
+        #ltr_port_fwd_spec+=("-L $port:localhost:$port")
+    #done
+
     log "cmd=remote_tmux_interactive host=$host_alias\$ command='tmux $@'"
-    ssh -t ${port_fwd_spec[@]} "$host_alias" "tmux $@"
+    echo "ssh -t ${rtl_port_fwd_spec[@]} ${ltr_port_fwd_spec[@]} \"$host_alias\" \"tmux $@\""
+    ssh -t ${rtl_port_fwd_spec[@]} "$host_alias" "tmux $@"
 }
 
 function _cleanup() {
