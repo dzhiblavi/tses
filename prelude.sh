@@ -78,7 +78,6 @@ function remote_tmux_interactive() {
     done
 
     log "cmd=remote_tmux_interactive host=$host_alias\$ command='tmux $@'"
-    echo "ssh -t ${rtl_port_fwd_spec[@]} ${ltr_port_fwd_spec[@]} \"$host_alias\" \"tmux $@\""
     ssh -t ${rtl_port_fwd_spec[@]} ${ltr_port_fwd_spec[@]} "$host_alias" "tmux $@"
 }
 
