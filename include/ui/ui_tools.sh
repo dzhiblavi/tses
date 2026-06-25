@@ -7,16 +7,24 @@ function ui_choose_multiple_options() {
 }
 
 function ui_query_string() {
-    prompt="${@:?Need prompt}"
+    local prompt="${@:?Need prompt}"
+    local prompt_quoted
+    local response_file
+    local response_file_quoted
+
+    prompt_quoted="$(printf "%q" "$prompt: ")"
+    response_file="$(mktemp "${TMPDIR:-/tmp}/tses_response.XXXXXX")"
+    response_file_quoted="$(printf "%q" "$response_file")"
 
     tmux display-popup -E \
-        "printf '$prompt: ' && read response && echo \"\$response\" > /tmp/tx_response" || {
+        "printf %s $prompt_quoted && IFS= read -r response && printf '%s\n' \"\$response\" > $response_file_quoted" || {
+        rm -f "$response_file"
         echo ""
         exit 0
     }
 
-    cat /tmp/tx_response
-    rm /tmp/tx_response
+    cat "$response_file"
+    rm -f "$response_file"
 }
 
 function list_sessions() {
