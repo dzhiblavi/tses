@@ -22,7 +22,8 @@ function init_log() {
 }
 
 function send() {
-    echo "$@" | {
+    local IFS=$'\t'
+    printf '%s\n' "$*" | {
         nc -w 0 localhost "${c_ctrl_port}" &&
             log "cmd=send status=success args='$@'" ||
             log "cmd=send status=err args='$@'"

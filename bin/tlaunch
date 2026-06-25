@@ -22,7 +22,9 @@ function _attach_session() {
 }
 
 function _execute() {
-    IFS=$' ' cmd_args=(${1:-})
+    local IFS=$'\t'
+    read -r -a cmd_args <<<"${1:-}"
+
     cmd="${cmd_args[0]}"
     args=("${cmd_args[@]:1}")
 
