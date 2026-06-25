@@ -30,12 +30,11 @@ fi
 option_kind="$(echo "$option" | sed 's/ on \[.*//')"
 host_alias="$(echo "$option" | sed -rn 's/.* \[(.*)\]/\1/p')"
 
-IFS=' ' read -r -a option <<<"$option"
-log "option='${option[@]}' kind='$option_kind' len=${#option[@]}"
+log "option='$option' kind='$option_kind'"
 
 case "${option_kind}" in
 'R rename session') run ui/rename_session.sh ;;
 '- kill sessions') run ui/kill_sessions.sh ;;
 '+ new session') run ui/new_session.sh "$host_alias" ;;
-*) run switch_session.sh "${option[@]}" ;;
+*) run switch_session.sh "$option" ;;
 esac
