@@ -51,6 +51,16 @@ function remote_cmd() {
     ssh "$host_alias" "$@"
 }
 
+function quote_shell_args() {
+    local arg
+
+    printf "%q" "${1:?Need command}"
+    shift
+    for arg in "$@"; do
+        printf " %q" "$arg"
+    done
+}
+
 function local_tmux() {
     log "cmd=local_tmux command='tmux $@'"
     tmux "$@"
@@ -61,7 +71,7 @@ function remote_tmux() {
     shift
 
     log "cmd=remote_tmux host=$host_alias command='tmux $@'"
-    ssh "$host_alias" "tmux $@"
+    ssh "$host_alias" "$(quote_shell_args tmux "$@")"
 }
 
 function remote_tmux_interactive() {
@@ -79,7 +89,7 @@ function remote_tmux_interactive() {
     done
 
     log "cmd=remote_tmux_interactive host=$host_alias\$ command='tmux $@'"
-    ssh -t ${rtl_port_fwd_spec[@]} ${ltr_port_fwd_spec[@]} "$host_alias" "tmux $@"
+    ssh -t ${rtl_port_fwd_spec[@]} ${ltr_port_fwd_spec[@]} "$host_alias" "$(quote_shell_args tmux "$@")"
 }
 
 function _cleanup() {
