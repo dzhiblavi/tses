@@ -1,7 +1,5 @@
 while read -r session; do
-    IFS=$' ' session=($session)
-    host_alias="$(echo "${session[0]}" | tr -d '[]')"
-    session="${session[1]}"
+    parse_session_spec "$session"
 
     log "cmd=kill_sessions host=$host_alias session=$session"
 

@@ -24,6 +24,14 @@ function list_sessions() {
     cat "${c_remote_sessions_file_path}" | grep -v "\[$c_host_alias\]" || true
 }
 
+function parse_session_spec() {
+    local session_spec="${1:?Need session spec}"
+
+    host_alias="${session_spec%%]*}"
+    host_alias="${host_alias#[}"
+    session="${session_spec#*] }"
+}
+
 function ui_choose_one_session() {
     list_sessions |
         ui_choose_one_option "${*:?Need prompt}" |

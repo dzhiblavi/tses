@@ -4,9 +4,7 @@ if [ -z "${session[@]}" ]; then
     exit 0
 fi
 
-IFS=$' ' session=($session)
-host_alias="$(echo "${session[0]}" | tr -d '[]')"
-session="${session[1]}"
+parse_session_spec "$session"
 
 new_name=$(ui_query_string "Rename $session (on [$host_alias]) to")
 if [ -z "$new_name" ]; then
